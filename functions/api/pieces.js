@@ -12,13 +12,17 @@ export async function onRequestPost({request,env}) {
  const form=await request.formData();
  const title=cleanText(form.get('title'),90),description=cleanText(form.get('description'),2000),category=cleanText(form.get('category'),40)||'기타', tags=tagsFrom(form.get('tags'));
  if(!title)return error('제목을 입력하세요.');
- const image=form.get('image'),video=form.get('video');
- if(!(image instanceof File&&image.size)&&!(video instanceof File&&video.size))return error('이미지 또는 영상을 선택하세요.');
+ const image=form.get('image'),video=form.get('video'),pcImage=form.get('pcImage'),pcVideo=form.get('pcVideo');
+ if(![image,video,pcImage,pcVideo].some(f=>f instanceof File&&f.size))return error('이미지 또는 영상을 선택하세요.');
  const id=crypto.randomUUID(),keys=[];
  try {
  const imageKey=await storeFile(image,env,id,'image');if(imageKey)keys.push(imageKey);
  const videoKey=await storeFile(video,env,id,'video');if(videoKey)keys.push(videoKey);
- await env.DB.prepare('INSERT INTO pieces(id,title,description,category,tags,image_key,video_key) VALUES(?,?,?,?,?,?,?)').bind(id,title,description,category,JSON.stringify(tags),imageKey,videoKey).run();
+ const pcImageKey=await storeFile(pcImage,env,id);if(pcImageKey)keys.push(pcImageKey);
+ const pcVideoKey=await storeFile(pcVideo,env,id,'pc-video');if(pcVideoKey)keys.push(pcVideoKey);
+ const pcImageKey=await storeFile(pcImage,env,id,'pc-image');if(pcImageKey)keys.push(pcImageKey);
+ const pcVideoKey=await storeFile(pcVideo,env,id,'pc-video');if(pcVideoKey)keys.push(pcVideoKey);
+ await env.DB.prepare('INSERT INTO pieces(id,title,description,category,tags,image_key,video_key,pc_image_key,pc_video_key) VALUES(?,?,?,?,?,?,?,?,?)').bind(id,title,description,category,JSON.stringify(tags),imageKey,videoKey,pcImageKey,pcVideoKey).run();
  return json({ok:true,id},201);
  }catch(e){await Promise.allSettled(keys.map(k=>env.MEDIA_BUCKET.delete(k)));throw e;}
  }catch(e){return error(e.message||'업로드 실패',400)}

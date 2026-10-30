@@ -12,8 +12,8 @@ export async function onRequestDelete({request,env,params}){
  if(!await authorized(request,env))return error('로그인 필요',401);
  if(!ready(env))return error('설정 오류',503);
  if(!validId(params.id))return error('잘못된 ID',400);
- const row=await env.DB.prepare('SELECT image_key,video_key FROM pieces WHERE id=?').bind(params.id).first();if(!row)return error('삭제할 작품이 없습니다.',404);
+ const row=await env.DB.prepare('SELECT image_key,video_key,pc_image_key,pc_video_key FROM pieces WHERE id=?').bind(params.id).first();if(!row)return error('삭제할 작품이 없습니다.',404);
  await env.DB.prepare('DELETE FROM pieces WHERE id=?').bind(params.id).run();
- for(const key of [row.image_key,row.video_key])if(key)await env.MEDIA_BUCKET.delete(key);
+ for(const key of [row.image_key,row.video_key,row.pc_image_key,row.pc_video_key])if(key)await env.MEDIA_BUCKET.delete(key);
  return json({ok:true});
 }

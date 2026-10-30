@@ -13,7 +13,7 @@ export async function authorized(request, env) {
   return difference===0;
 }
 export function asPiece(row) {
-  return {id:row.id,title:row.title,en:'',description:row.description||'',category:row.category||'기타',tags:JSON.parse(row.tags||'[]'),image:row.image_key?`/media/${encodeURIComponent(row.id)}/image`:null,video:row.video_key?`/media/${encodeURIComponent(row.id)}/video`:null,downloads:row.downloads||0};
+  return {id:row.id,title:row.title,en:'',description:row.description||'',category:row.category||'기타',tags:JSON.parse(row.tags||'[]'),image:row.image_key?`/media/${encodeURIComponent(row.id)}/image`:null,video:row.video_key?`/media/${encodeURIComponent(row.id)}/video`:null,pcImage:row.pc_image_key?`/media/${encodeURIComponent(row.id)}/pc-image`:null,pcVideo:row.pc_video_key?`/media/${encodeURIComponent(row.id)}/pc-video`:null,downloads:row.downloads||0};
 }
 export const builtins=[
  {id:'hamster',title:'쿠키 부스러기 속 햄스터',en:'Cookie Crumb Hamsters',description:'쿠키 조각 사이에서 뒹구는 작고 귀여운 햄스터들의 세상.',tags:['햄스터','쿠키','미니어처','동물'],category:'동물',image:'assets/hamster.jpg',video:'assets/hamster.mp4',downloads:0},
@@ -25,8 +25,9 @@ export function cleanText(x,limit=500){return String(x??'').trim().slice(0,limit
 export function tagsFrom(value){ if(Array.isArray(value))return value.map(x=>cleanText(x,40)).filter(Boolean).slice(0,12);return cleanText(value,500).split(',').map(x=>x.trim().slice(0,40)).filter(Boolean).slice(0,12); }
 export async function storeFile(file, env, id,kind) {
  if(!(file instanceof File) || !file.size)return null;
- const types=kind==='image'?['image/jpeg','image/png','image/webp']:['video/mp4','video/webm'];
- const max=kind==='image'?15*1024*1024:40*1024*1024;
+ const isImage=kind.includes('image');
+ const types=isImage?['image/jpeg','image/png','image/webp']:['video/mp4','video/webm'];
+ const max=isImage?15*1024*1024:40*1024*1024;
  if(!types.includes(file.type))throw Error(`지원하지 않는 ${kind} 형식입니다.`);
  if(file.size>max)throw Error(`${kind} 크기가 제한을 넘었습니다. (이미지 15MB, 영상 40MB)`);
  const peek=new Uint8Array(await file.slice(0,16).arrayBuffer());
@@ -44,18 +45,18 @@ export async function storeFile(file, env, id,kind) {
 }
 export async function serveFile(context, download=false){
  const {env,params}=context;const id=params.id, kind=params.kind;
- if(!validId(id)||!['image','video'].includes(kind))return error('찾을 수 없습니다.',404);
+ if(!validId(id)||!['image','video','pc-image','pc-video'].includes(kind))return error('찾을 수 없습니다.',404);
  const builtin=builtins.find(x=>x.id===id);
- if(builtin){let path=kind==='image'?builtin.image:builtin.video; const url=new URL('/'+path,context.request.url);return download?Response.redirect(url.href,302):env.ASSETS.fetch(new Request(url.href));}
+ if(builtin){if(kind.startsWith('pc-'))return error('PC 전용 파일이 아직 없습니다.',404);let path=kind==='image'?builtin.image:builtin.video; const url=new URL('/'+path,context.request.url);return download?Response.redirect(url.href,302):env.ASSETS.fetch(new Request(url.href));}
  if(!ready(env))return error('서버 설정이 필요합니다.',503);
- const row=await env.DB.prepare('SELECT title,image_key,video_key FROM pieces WHERE id=?').bind(id).first();
+ const row=await env.DB.prepare('SELECT title,image_key,video_key,pc_image_key,pc_video_key FROM pieces WHERE id=?').bind(id).first();
  if(!row)return error('찾을 수 없습니다.',404);
- const key=kind==='image'?row.image_key:row.video_key;
+ const key=({'image':row.image_key,'video':row.video_key,'pc-image':row.pc_image_key,'pc-video':row.pc_video_key})[kind];
  if(!key)return error('파일이 없습니다.',404);
  const object=await env.MEDIA_BUCKET.get(key);
  if(!object)return error('파일이 없습니다.',404);
- const mime=object.httpMetadata?.contentType || (kind==='image'?'image/jpeg':'video/mp4');
+ const mime=object.httpMetadata?.contentType || (kind.includes('image')?'image/jpeg':'video/mp4');
  const h=new Headers({'Content-Type':mime,'X-Content-Type-Options':'nosniff','Cache-Control':'public, max-age=300'});
- if(download){h.set('Content-Disposition',`attachment; filename="tinyworlds-${id}.${mime==='image/png'?'png':mime==='image/webp'?'webp':mime==='video/webm'?'webm':kind==='image'?'jpg':'mp4'}"`);h.set('Cache-Control','no-store');context.waitUntil(env.DB.prepare('UPDATE pieces SET downloads = downloads + 1 WHERE id=?').bind(id).run());}
+ if(download){h.set('Content-Disposition',`attachment; filename="tinyworlds-${id}.${mime==='image/png'?'png':mime==='image/webp'?'webp':mime==='video/webm'?'webm':kind.includes('image')?'jpg':'mp4'}"`);h.set('Cache-Control','no-store');context.waitUntil(env.DB.prepare('UPDATE pieces SET downloads = downloads + 1 WHERE id=?').bind(id).run());}
  return new Response(object.body,{headers:h});
 }
