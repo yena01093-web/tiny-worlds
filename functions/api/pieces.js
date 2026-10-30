@@ -18,8 +18,6 @@ export async function onRequestPost({request,env}) {
  try {
  const imageKey=await storeFile(image,env,id,'image');if(imageKey)keys.push(imageKey);
  const videoKey=await storeFile(video,env,id,'video');if(videoKey)keys.push(videoKey);
- const pcImageKey=await storeFile(pcImage,env,id);if(pcImageKey)keys.push(pcImageKey);
- const pcVideoKey=await storeFile(pcVideo,env,id,'pc-video');if(pcVideoKey)keys.push(pcVideoKey);
  const pcImageKey=await storeFile(pcImage,env,id,'pc-image');if(pcImageKey)keys.push(pcImageKey);
  const pcVideoKey=await storeFile(pcVideo,env,id,'pc-video');if(pcVideoKey)keys.push(pcVideoKey);
  await env.DB.prepare('INSERT INTO pieces(id,title,description,category,tags,image_key,video_key,pc_image_key,pc_video_key) VALUES(?,?,?,?,?,?,?,?,?)').bind(id,title,description,category,JSON.stringify(tags),imageKey,videoKey,pcImageKey,pcVideoKey).run();
