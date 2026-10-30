@@ -21,7 +21,7 @@ export async function onRequestPost({request,env}) {
  const pcImageKey=await storeFile(pcImage,env,id,'pc-image');if(pcImageKey)keys.push(pcImageKey);
  const pcVideoKey=await storeFile(pcVideo,env,id,'pc-video');if(pcVideoKey)keys.push(pcVideoKey);
  await env.DB.prepare('INSERT INTO pieces(id,title,description,category,tags,image_key,video_key,pc_image_key,pc_video_key) VALUES(?,?,?,?,?,?,?,?,?)').bind(id,title,description,category,JSON.stringify(tags),imageKey,videoKey,pcImageKey,pcVideoKey).run();
- return json({ok:true,id},201);
+ return json(r.results.map(asPiece));
  }catch(e){await Promise.allSettled(keys.map(k=>env.MEDIA_BUCKET.delete(k)));throw e;}
  }catch(e){return error(e.message||'업로드 실패',400)}
 }
