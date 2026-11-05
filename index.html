@@ -32,6 +32,18 @@
  .previewpane{height:min(48vh,400px);min-height:240px}
  .details{max-height:none;overflow:visible}
 }
+
+/* Gallery-only smartphone wallpaper mockup. Does not affect the viewers or admin. */
+.art.phone-gallery{display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 34%,#45405d 0%,#29273e 48%,#181827 100%);padding:18px 38px}
+.phone-frame{height:100%;max-height:310px;aspect-ratio:9 / 19.5;position:relative;display:block;border:5px solid #0b0c13;border-radius:27px;background:#0b0c13;box-shadow:0 0 0 1px #76748a,0 12px 30px #0008;overflow:hidden;flex:none}
+.phone-screen{width:100%;height:100%;overflow:hidden;border-radius:21px;background:#202032;position:relative}
+.phone-screen>img,.phone-screen>video{width:100%;height:100%;object-fit:cover;display:block;scale:1!important;transition:none!important}
+.phone-notch{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:34%;height:10px;border-radius:9px;background:#08090f;z-index:2}
+.phone-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:45px;height:45px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1114;color:#fff;backdrop-filter:blur(5px);font-size:22px;border:1px solid #ffffff88;pointer-events:none}
+.art.phone-gallery .chip{z-index:3}.art.phone-gallery .fave{z-index:3}
+.tile:hover .art.phone-gallery img{scale:1!important}
+@media(max-width:800px){.phone-frame{max-height:250px}.art.phone-gallery{padding:14px}}
+@media(max-width:510px){.phone-frame{max-height:325px}.art.phone-gallery{padding:17px}}
 </style>
 </head>
 <body>
@@ -73,10 +85,12 @@ function draw(){
  grid.innerHTML=cards.length?cards.map(({piece:p,kind})=>{
   const isVideo=kind==='motion';
   const media=isVideo?(p.video||p.pcVideo):(p.image||p.pcImage);
-  const thumb=isVideo
-   ?`<video src="${encodeURI(media)}" ${p.image||p.pcImage?`poster="${encodeURI(p.image||p.pcImage)}"`:''} muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover"></video>`
-   :`<img src="${encodeURI(media)}" alt="${escapeHtml(p.title)}" loading="lazy">`;
-  return `<article class="tile"><div class="art">${thumb}<span class="chip">${isVideo?'▶ 동영상':'🖼 이미지'} · 무료</span><button class="fave ${favorites.has(p.id)?'selected':''}" data-fav="${p.id}" aria-label="즐겨찾기">${favorites.has(p.id)?'♥':'♡'}</button></div><div class="cardtext"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.category||'미니어처')} · ${isVideo?'움직이는 배경화면':'정지 배경화면'}</p><div class="tileactions"><button class="sm ${isVideo?'main':''}" data-open="${p.id}" data-mode="${kind}">${isVideo?'▶ 동영상 보기':'이미지 보기'}</button></div></div></article>`;
+  const poster=p.image||p.pcImage;
+  const screenMedia=isVideo
+   ?(poster?`<img src="${encodeURI(poster)}" alt="${escapeHtml(p.title)} 영상 미리보기" loading="lazy">`:`<video src="${encodeURI(media)}" muted playsinline preload="metadata"></video>`)
+   :`<img src="${encodeURI(media)}" alt="${escapeHtml(p.title)} 휴대폰 배경화면" loading="lazy">`;
+  const thumb=`<div class="phone-frame"><div class="phone-screen">${screenMedia}${isVideo?'<span class="phone-play" aria-hidden="true">▶</span>':''}</div><span class="phone-notch" aria-hidden="true"></span></div>`;
+  return `<article class="tile"><div class="art phone-gallery">${thumb}<span class="chip">${isVideo?'▶ 동영상':'🖼 이미지'} · 무료</span><button class="fave ${favorites.has(p.id)?'selected':''}" data-fav="${p.id}" aria-label="즐겨찾기">${favorites.has(p.id)?'♥':'♡'}</button></div><div class="cardtext"><h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.category||'미니어처')} · ${isVideo?'움직이는 배경화면':'정지 배경화면'}</p><div class="tileactions"><button class="sm ${isVideo?'main':''}" data-open="${p.id}" data-mode="${kind}">${isVideo?'▶ 동영상 보기':'이미지 보기'}</button></div></div></article>`;
  }).join(''):'<div class="empty">해당하는 작품이 아직 없어요. 다른 검색어를 입력해보세요.</div>';
 }
 
