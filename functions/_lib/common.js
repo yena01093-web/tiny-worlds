@@ -15,11 +15,7 @@ export async function authorized(request, env) {
 export function asPiece(row) {
   return {id:row.id,title:row.title,en:'',description:row.description||'',category:row.category||'기타',tags:JSON.parse(row.tags||'[]'),image:row.image_key?`/media/${encodeURIComponent(row.id)}/image`:null,video:row.video_key?`/media/${encodeURIComponent(row.id)}/video`:null,pcImage:row.pc_image_key?`/media/${encodeURIComponent(row.id)}/pc-image`:null,pcVideo:row.pc_video_key?`/media/${encodeURIComponent(row.id)}/pc-video`:null,downloads:row.downloads||0};
 }
-export const builtins=[
- {id:'hamster',title:'쿠키 부스러기 속 햄스터',en:'Cookie Crumb Hamsters',description:'쿠키 조각 사이에서 뒹구는 작고 귀여운 햄스터들의 세상.',tags:['햄스터','쿠키','미니어처','동물'],category:'동물',image:'assets/hamster.jpg',video:'assets/hamster.mp4',downloads:0},
- {id:'bunny',title:'초콜릿 비스킷 토끼',en:'Chocolate Biscuit Bunnies',description:'달콤한 초콜릿 비스킷을 갉아 먹는 사랑스러운 토끼들.',tags:['토끼','초콜릿','디저트','귀여움'],category:'디저트',image:'assets/bunny.jpg',video:'assets/bunny.mp4',downloads:0},
- {id:'piglet',title:'솜사탕 구름의 아기 돼지',en:'Cotton Candy Piglet',description:'폭신한 솜사탕 구름을 먹는 아기 돼지의 판타지 세계.',tags:['돼지','솜사탕','판타지','동물'],category:'판타지',image:'assets/piglet.jpg',video:'assets/piglet.mp4',downloads:0}
-];
+export const builtins=[];
 export function validId(id){return typeof id==='string'&&/^[a-zA-Z0-9-]{1,80}$/.test(id);}
 export function cleanText(x,limit=500){return String(x??'').trim().slice(0,limit);}
 export function tagsFrom(value){ if(Array.isArray(value))return value.map(x=>cleanText(x,40)).filter(Boolean).slice(0,12);return cleanText(value,500).split(',').map(x=>x.trim().slice(0,40)).filter(Boolean).slice(0,12); }
@@ -46,8 +42,6 @@ export async function storeFile(file, env, id,kind) {
 export async function serveFile(context, download=false){
  const {env,params}=context;const id=params.id, kind=params.kind;
  if(!validId(id)||!['image','video','pc-image','pc-video'].includes(kind))return error('찾을 수 없습니다.',404);
- const builtin=builtins.find(x=>x.id===id);
- if(builtin){if(kind.startsWith('pc-'))return error('PC 전용 파일이 아직 없습니다.',404);let path=kind==='image'?builtin.image:builtin.video; const url=new URL('/'+path,context.request.url);return download?Response.redirect(url.href,302):env.ASSETS.fetch(new Request(url.href));}
  if(!ready(env))return error('서버 설정이 필요합니다.',503);
  const row=await env.DB.prepare('SELECT title,image_key,video_key,pc_image_key,pc_video_key FROM pieces WHERE id=?').bind(id).first();
  if(!row)return error('찾을 수 없습니다.',404);
