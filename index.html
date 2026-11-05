@@ -18,9 +18,9 @@
 .imageviewercontrols button.selected{background:#eac3e8;color:#28152e;border-color:#eac3e8;font-weight:800}
 .imageviewercontrols button:disabled{opacity:.35;cursor:not-allowed}
 .imageviewerstage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;max-width:1450px;width:100%;margin:0 auto auto}
-.imageviewerstage img{display:block;max-width:100%;max-height:calc(100vh - 110px);width:auto;height:auto;object-fit:contain}
+.imageviewerstage img,.imageviewerstage video{display:block;max-width:100%;max-height:calc(100vh - 110px);width:auto;height:auto;object-fit:contain}
 .imageviewernote{text-align:center;color:#a7a9be;font-size:12px;margin:0 0 3px}
-@media(max-width:600px){.imageviewer{padding:9px}.imageviewerbar{align-items:flex-start}.imageviewertitle{width:100%}.imageviewercontrols button{padding:8px 10px}.imageviewerstage img{max-height:calc(100dvh - 160px)}}
+@media(max-width:600px){.imageviewer{padding:9px}.imageviewerbar{align-items:flex-start}.imageviewertitle{width:100%}.imageviewercontrols button{padding:8px 10px}.imageviewerstage img,.imageviewerstage video{max-height:calc(100dvh - 160px)}}
 
 /* Modal layout repair: contain 16:9 media inside its own column. */
 .modal{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);overflow:hidden}
@@ -46,6 +46,13 @@
   </div>
   <div class="imageviewerstage"><img id="imageviewerImage" alt="큰 이미지 미리보기"></div>
   <p class="imageviewernote">원본 비율로 크게 감상할 수 있어요. 저장하려면 다운로드를 누르세요.</p>
+</div>
+<div id="videoviewer" class="imageviewer" role="dialog" aria-modal="true" aria-label="큰 동영상 보기" aria-hidden="true">
+  <div class="imageviewerbar"><span id="videoviewerTitle" class="imageviewertitle"></span>
+    <div class="imageviewercontrols"><button id="videoviewerPhone" type="button">📱 휴대폰</button><button id="videoviewerPc" type="button">🖥️ PC</button><button id="videoviewerDetails" type="button">↓ 다운로드</button><button id="videoviewerClose" type="button" aria-label="큰 동영상 닫기">✕ 닫기</button></div>
+  </div>
+  <div class="imageviewerstage"><video id="videoviewerVideo" controls playsinline preload="metadata"></video></div>
+  <p class="imageviewernote">영상을 크게 재생할 수 있어요. 소리와 재생은 플레이어에서 조절하세요.</p>
 </div>
 <div class="modalback" id="modalback" role="dialog" aria-modal="true" aria-label="작품 상세보기"><div class="modal"><div class="previewpane" id="previewpane"></div><div class="details"><button class="close" id="close" aria-label="닫기">×</button><div class="eyebrow">FREE DOWNLOAD</div><h2 id="modaltitle"></h2><p id="modaldesc"></p><div class="switcher"><button id="phone" class="active">📱 휴대폰</button><button id="desktop">🖥️ PC</button></div><p id="spec"></p><div class="dactions"><a id="jpgdownload" class="btn" download>↓ 이미지 다운로드</a><a id="mp4download" class="btn secondary" download>↓ 동영상 다운로드</a></div><p class="smallnote" id="deviceAvailability"></p><p class="smallnote">실제 해상도는 업로드된 파일마다 다릅니다. PC용 파일과 휴대폰용 파일은 별도 등록합니다. 기종에 따라 MP4를 움직이는 배경화면으로 직접 지정할 수 없습니다.</p></div></div></div>
 <style>.adminpanel{background:#171827;border:1px solid #ffffff22;border-radius:20px;padding:24px;margin:20px 0;display:grid;gap:15px;max-width:970px}.adminpanel label{display:grid;gap:8px;color:#d4d2df;font-size:14px}.adminpanel input,.adminpanel select,.adminpanel textarea{width:100%;padding:12px;background:#242638;border:1px solid #4b465f;border-radius:11px;color:white;min-width:0}.adminrows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.adminitem{display:flex;gap:12px;align-items:center;justify-content:space-between;border-top:1px solid #343447;padding:13px 0}.adminitem span{flex:1}.adminitem button{background:#303146;border:1px solid #505066;border-radius:9px;padding:9px;color:#fff}.adminitem .danger{color:#ffb5c1}.adminitem img{width:45px;height:55px;object-fit:cover;border-radius:6px}[hidden]{display:none!important}@media(max-width:800px){#adminMobileLink{display:inline-block!important}}@media(max-width:510px){.adminrows{grid-template-columns:1fr}.adminitem{flex-wrap:wrap}}</style>
@@ -73,7 +80,7 @@ function draw(){
  }).join(''):'<div class="empty">해당하는 작품이 아직 없어요. 다른 검색어를 입력해보세요.</div>';
 }
 
-document.querySelectorAll('[data-filter]').forEach(el=>el.onclick=()=>{filter=el.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===el));draw()});document.getElementById('search').oninput=e=>{query=e.target.value;draw()};grid.addEventListener('click',e=>{const f=e.target.closest('[data-fav]');if(f){favorites.has(f.dataset.fav)?favorites.delete(f.dataset.fav):favorites.add(f.dataset.fav);try{localStorage.setItem(favKey,JSON.stringify([...favorites]))}catch{}draw();return}const o=e.target.closest('[data-open]');if(o){if(o.dataset.mode==='image')openLargeImage(o.dataset.open);else openPiece(o.dataset.open,o.dataset.mode)}});
+document.querySelectorAll('[data-filter]').forEach(el=>el.onclick=()=>{filter=el.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===el));draw()});document.getElementById('search').oninput=e=>{query=e.target.value;draw()};grid.addEventListener('click',e=>{const f=e.target.closest('[data-fav]');if(f){favorites.has(f.dataset.fav)?favorites.delete(f.dataset.fav):favorites.add(f.dataset.fav);try{localStorage.setItem(favKey,JSON.stringify([...favorites]))}catch{}draw();return}const o=e.target.closest('[data-open]');if(o){if(o.dataset.mode==='image')openLargeImage(o.dataset.open);else openLargeVideo(o.dataset.open)}});
 // Image-only immersive viewer. Keeps existing modal and server download logic intact.
 const imageviewer=document.getElementById('imageviewer');
 let viewedPiece=null, viewedDevice='phone';
@@ -116,6 +123,50 @@ document.getElementById('imageviewerDetails').onclick=()=>{
  refreshPreview();
 };
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&imageviewer.classList.contains('open')){e.stopImmediatePropagation();closeLargeImage()}});
+
+// Immersive video playback, separate from download details. Reuse existing URLs.
+const videoviewer=document.getElementById('videoviewer');
+const videoPlayer=document.getElementById('videoviewerVideo');
+let playingPiece=null, playingDevice='phone';
+function showLargeVideo(){
+ if(!playingPiece)return;
+ const src=playingDevice==='desktop'?playingPiece.pcVideo:playingPiece.video;
+ videoPlayer.pause();videoPlayer.removeAttribute('src');videoPlayer.load();
+ if(src){videoPlayer.src=src;videoPlayer.load();videoPlayer.play().catch(()=>{});}
+ document.getElementById('videoviewerPhone').classList.toggle('selected',playingDevice==='phone');
+ document.getElementById('videoviewerPc').classList.toggle('selected',playingDevice==='desktop');
+ document.getElementById('videoviewerPhone').disabled=!playingPiece.video;
+ document.getElementById('videoviewerPc').disabled=!playingPiece.pcVideo;
+}
+function openLargeVideo(id){
+ playingPiece=pieces.find(p=>p.id===id);
+ if(!playingPiece||!(playingPiece.video||playingPiece.pcVideo))return;
+ playingDevice=playingPiece.video?'phone':'desktop';
+ document.getElementById('videoviewerTitle').textContent=playingPiece.title;
+ videoviewer.classList.add('open');videoviewer.setAttribute('aria-hidden','false');
+ document.body.style.overflow='hidden';
+ showLargeVideo();
+ document.getElementById('videoviewerClose').focus();
+}
+function closeLargeVideo(){
+ videoPlayer.pause();videoPlayer.removeAttribute('src');videoPlayer.load();
+ videoviewer.classList.remove('open');videoviewer.setAttribute('aria-hidden','true');
+ document.body.style.overflow='';
+}
+document.getElementById('videoviewerPhone').onclick=()=>{if(playingPiece?.video){playingDevice='phone';showLargeVideo()}};
+document.getElementById('videoviewerPc').onclick=()=>{if(playingPiece?.pcVideo){playingDevice='desktop';showLargeVideo()}};
+document.getElementById('videoviewerClose').onclick=closeLargeVideo;
+videoviewer.addEventListener('click',e=>{if(e.target===videoviewer)closeLargeVideo()});
+document.getElementById('videoviewerDetails').onclick=()=>{
+ if(!playingPiece)return;
+ const id=playingPiece.id, chosen=playingDevice;
+ closeLargeVideo();openPiece(id,'motion');
+ device=chosen;
+ document.getElementById('phone').classList.toggle('active',device==='phone');
+ document.getElementById('desktop').classList.toggle('active',device==='desktop');
+ refreshPreview();
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&videoviewer.classList.contains('open')){e.stopImmediatePropagation();closeLargeVideo()}});
 
 const back=document.getElementById('modalback');
 function chooseMedia(p,kind){return device==='desktop'?(kind==='image'?p.pcImage:p.pcVideo):(kind==='image'?p.image:p.video)}
