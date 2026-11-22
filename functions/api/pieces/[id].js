@@ -18,7 +18,8 @@ export async function onRequestPatch({request,env,params}) {
    const category=cleanText(payload.category??old.category,40)||'기타';
    const tags=tagsFrom(payload.tags??JSON.parse(old.tags||'[]'));
    const values={image:old.image_key,video:old.video_key,pcImage:old.pc_image_key,pcVideo:old.pc_video_key};
-   if(form){for(const [name,kind] of [['image','image'],['video','video'],['pcImage','pc-image'],['pcVideo','pc-video']]){
+   if(form&&['video','pcVideo'].some(name=>form.get(name)?.size))return error('동영상은 등록할 수 없습니다. 사진을 선택하세요.');
+   if(form){for(const [name,kind] of [['image','image'],['pcImage','pc-image']]){
      const file=form.get(name);
      if(file&&typeof file==='object'&&file.size>0){
        // A replacement uses a unique key; if the database update fails, old files remain usable.

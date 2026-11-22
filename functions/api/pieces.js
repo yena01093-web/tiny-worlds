@@ -17,14 +17,15 @@ export async function onRequestPost({request,env}) {
    const title=cleanText(form.get('title'),90),description=cleanText(form.get('description'),2000);
    const category=cleanText(form.get('category'),40)||'기타',tags=tagsFrom(form.get('tags'));
    if(!title)return error('제목을 입력하세요.');
+   if(['video','pcVideo'].some(name=>form.get(name)?.size))return error('동영상은 등록할 수 없습니다. 사진을 선택하세요.');
    const id=crypto.randomUUID(),values={};
-   for(const [name,kind] of [['image','image'],['video','video'],['pcImage','pc-image'],['pcVideo','pc-video']]){
+   for(const [name,kind] of [['image','image'],['pcImage','pc-image']]){
      values[name]=await storeFile(form.get(name),env,id,kind);
      if(values[name])stored.push(values[name]);
    }
-   if(!stored.length)return error('이미지나 동영상을 하나 이상 선택하세요.');
+   if(!stored.length)return error('사진을 하나 이상 선택하세요.');
    await env.DB.prepare('INSERT INTO pieces (id,title,description,category,tags,image_key,video_key,pc_image_key,pc_video_key) VALUES (?,?,?,?,?,?,?,?,?)')
-      .bind(id,title,description,category,JSON.stringify(tags),values.image,values.video,values.pcImage,values.pcVideo).run();
+      .bind(id,title,description,category,JSON.stringify(tags),values.image,null,values.pcImage,null).run();
    return json({ok:true,id},201);
  } catch(e) {
    await Promise.allSettled(stored.map(k=>env.MEDIA_BUCKET.delete(k)));
