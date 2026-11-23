@@ -25,3 +25,9 @@ Mac/Linux: 터미널에서 TW_ADMIN_PASSWORD 환경변수를 정한 뒤 python3 
 - 사진 업로드는 한 파일당 15MB, 한 요청당 총 35MB까지 지원합니다. 영상 업로드와 재생은 제공하지 않습니다.
 - 이전에 업로드한 영상 파일은 자동 삭제되지 않으며, 새 갤러리에서는 표시되지 않습니다.
 - PC/모바일 별도 원본 리사이징, 계정/결제는 추후 개발 항목입니다.
+
+2026-11-23 업데이트: 유튜브 채널 바로가기 3개 추가
+- MaltiGo Travel: https://www.youtube.com/@MaltiGoTravel
+- Giant Hand Art: https://www.youtube.com/@GiantHandArt
+- Susanghan Store: https://www.youtube.com/@SusanghanStore
+- 사이트에 영상은 표시하거나 업로드하지 않고, 버튼 클릭 시 유튜브 사이트로 이동합니다.
