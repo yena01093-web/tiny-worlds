@@ -63,21 +63,35 @@
 .resolution-note{font-size:12px;line-height:1.6;color:#c7c1d3;margin-top:8px}
 @media(max-width:510px){.hero h1{font-size:clamp(34px,10vw,55px)}.stats{flex-wrap:wrap}}
 
-/* Visitor counts: anonymized browser counts saved in Cloudflare D1. */
-.visitor-section{padding:0 0 64px}
-.visitor-panel{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap;background:#171827;border:1px solid #ffffff25;border-radius:22px;padding:26px 30px}
-.visitor-intro h2{font-size:21px;margin:8px 0 6px;letter-spacing:-.5px}
-.visitor-intro p{font-size:13px;color:#aeb0c1;margin:0;line-height:1.7}
-.visitor-values{display:flex;gap:22px;flex-wrap:wrap}
-.visitor-number{min-width:130px;display:flex;flex-direction:column;gap:6px;text-align:center;padding:12px 18px;background:#222337;border-radius:15px}
-.visitor-number span{color:#bdbed0;font-size:13px}
-.visitor-number strong{font-size:29px;line-height:1.2;color:#f2d2ee;font-variant-numeric:tabular-nums}
-@media(max-width:600px){.visitor-panel{padding:22px}.visitor-values{width:100%;gap:10px}.visitor-number{min-width:0;flex:1;padding:13px 9px}.visitor-number strong{font-size:24px}}
+/* Compact first-screen visitor totals. */
+.visitor-section{margin:22px 0 0;padding:0;max-width:520px}
+.visitor-panel{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:#171827;border:1px solid #ffffff28;border-radius:16px;padding:15px 17px}
+.visitor-intro{min-width:100px;flex:1}
+.visitor-intro .eyebrow{font-size:10px;letter-spacing:1.1px;margin:0 0 6px}
+.visitor-intro p{font-size:11px;color:#aeb0c1;margin:0;line-height:1.55}
+.visitor-values{display:flex;gap:9px;flex:2;min-width:220px}
+.visitor-number{min-width:0;flex:1;display:flex;flex-direction:column;gap:5px;text-align:center;padding:9px 10px;background:#242437;border-radius:11px}
+.visitor-number span{color:#bdbed0;font-size:12px;white-space:nowrap}
+.visitor-number strong{font-size:23px;line-height:1.2;color:#f2d2ee;font-variant-numeric:tabular-nums}
+@media(max-width:600px){.visitor-panel{padding:13px;gap:11px}.visitor-intro{flex-basis:100%;min-width:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.visitor-intro p{font-size:10px}.visitor-values{width:100%;min-width:0;gap:9px;flex:1}.visitor-number{padding:10px 7px}.visitor-number strong{font-size:23px}}
 </style>
 </head>
 <body>
 <header class="topbar"><div class="shell nav"><a href="#top" class="logo">✦ Tiny<span>Worlds</span></a><nav class="navlinks"><a href="#gallery">배경화면</a><a href="#channels">유튜브 채널</a><a href="#how">이용 방법</a><a href="#about">소개</a><a href="#admin" id="adminLink">관리자</a></nav><a href="#admin" id="adminMobileLink" class="navpill" style="display:none">관리</a><a href="#gallery" class="navpill">🎁 모든 작품 무료</a></div></header>
-<main id="top"><section class="hero"><div class="shell hero-inner"><div><div class="eyebrow">4K ULTRA HD &amp; HIGH-RES WALLPAPERS</div><h1>작은 세상을<br><span>4K Ultra HD로.</span></h1><p class="subtitle">상상 속 귀여운 친구들과 몽환적인 풍경을 만나보세요. <strong style="color:#fff">4K Ultra HD를 포함한 고화질 사진 배경화면</strong>을 휴대폰과 PC에 무료로 내려받을 수 있어요.</p><div class="heroactions"><a href="#gallery" class="btn">무료 배경화면 둘러보기 →</a><a href="#channels" class="btn secondary">▶ 유튜브 채널 보기</a></div><div class="stats"><span><b>4K</b> 해상도 확인 작품</span><span>♥ 가입 불필요</span><span>↓ 무료 다운로드</span></div></div><div class="heropreview"><div id="heroVisual" style="height:410px;border-radius:27px;background:radial-gradient(circle at 32% 26%,#c697f699,#312a4d 56%,#121322);box-shadow:0 23px 90px #0008;display:grid;place-items:center;font-size:112px">✦</div><div class="floatnote">✦ 4K &amp; High-Resolution Wallpapers</div></div></div></section>
+<main id="top"><section class="hero"><div class="shell hero-inner"><div><div class="eyebrow">4K ULTRA HD &amp; HIGH-RES WALLPAPERS</div><h1>작은 세상을<br><span>4K Ultra HD로.</span></h1><p class="subtitle">상상 속 귀여운 친구들과 몽환적인 풍경을 만나보세요. <strong style="color:#fff">4K Ultra HD를 포함한 고화질 사진 배경화면</strong>을 휴대폰과 PC에 무료로 내려받을 수 있어요.</p><div class="visitor-section" id="visitors" aria-label="방문 현황">
+  <div class="visitor-panel">
+    <div class="visitor-intro">
+      <div class="eyebrow">VISITOR COUNT</div>
+      
+      <p id="visit-note">한국시간 기준 · 기능 적용 이후부터 집계</p>
+    </div>
+    <div class="visitor-values" aria-live="polite">
+      <div class="visitor-number"><span>오늘 방문자</span><strong id="visit-today">—</strong></div>
+      <div class="visitor-number"><span>전체 방문자</span><strong id="visit-total">—</strong></div>
+    </div>
+  </div>
+</div>
+<div class="heroactions"><a href="#gallery" class="btn">무료 배경화면 둘러보기 →</a><a href="#channels" class="btn secondary">▶ 유튜브 채널 보기</a></div><div class="stats"><span><b>4K</b> 해상도 확인 작품</span><span>♥ 가입 불필요</span><span>↓ 무료 다운로드</span></div></div><div class="heropreview"><div id="heroVisual" style="height:410px;border-radius:27px;background:radial-gradient(circle at 32% 26%,#c697f699,#312a4d 56%,#121322);box-shadow:0 23px 90px #0008;display:grid;place-items:center;font-size:112px">✦</div><div class="floatnote">✦ 4K &amp; High-Resolution Wallpapers</div></div></div></section>
 <section class="shell section" id="gallery"><div class="eyebrow">EXPLORE THE COLLECTION</div><h2 class="sectiontitle">사진 배경화면 갤러리</h2><div class="muted">4K 해상도 사진에는 확인된 경우에만 <strong style="color:#f4d3ef">4K Ultra HD</strong> 표시가 붙어요. 마음에 드는 사진을 휴대폰이나 PC 배경화면으로 사용해 보세요.</div><div class="filters"><div class="pills" role="group" aria-label="작품 필터"><button class="pill active" data-filter="all">전체 사진</button><button class="pill" data-filter="favorites">♡ 즐겨찾기</button></div><input class="search" id="search" placeholder="이름 또는 키워드 검색" aria-label="작품 검색"></div><div id="galleryGrid" class="grid"></div><div class="muted" id="galleryStatus" style="margin-top:16px"></div></section>
 <section class="shell section channels-section" id="channels" aria-labelledby="channelsHeading">
   <div class="channels-head"><div><div class="eyebrow">OUR YOUTUBE CHANNELS</div><h2 class="sectiontitle" id="channelsHeading">유튜브에서도 만나요</h2><p class="muted">더 많은 이야기는 유튜브에서 만나보세요. 이 사이트는 계속 사진 배경화면만 제공합니다.</p></div></div>
@@ -89,19 +103,7 @@
 </section>
 <section class="shell"><div class="banner"><div><h3>🖼️ 작은 세계를 화면 가득</h3><p>좋아하는 작품을 크게 감상하고, 원본 사진을 무료로 저장하세요.</p></div><a class="btn" href="#gallery">작품 만나보기 →</a></div><div id="how" class="eyebrow">HOW IT WORKS</div><h2 class="sectiontitle">이렇게 사용하세요</h2><div class="steps"><div class="step"><b>01</b><h3>마음에 드는 사진 선택</h3><p>동물, 미니어처, 자연 등 원하는 분위기의 작품을 찾아보세요.</p></div><div class="step"><b>02</b><h3>사진 다운로드</h3><p>휴대폰용 세로 사진 또는 PC용 가로 사진을 골라 저장하세요.</p></div><div class="step"><b>03</b><h3>내 기기에 적용</h3><p>다운로드한 이미지를 기기의 배경화면 설정에서 선택하세요.</p></div></div></section>
 <section class="shell section" id="admin" style="display:none"><div class="eyebrow">CREATOR STUDIO</div><h2 class="sectiontitle">사진 작품 관리</h2><p class="muted">관리자 로그인 후 JPG, PNG, WebP 사진을 등록하거나 수정할 수 있습니다.</p><form id="loginForm" class="adminpanel"><label>관리자 비밀번호<input id="adminPassword" type="password" autocomplete="current-password" required placeholder="비밀번호"></label><button class="btn" type="submit">관리자 로그인</button></form><div id="adminWorkspace" hidden><form id="uploadForm" class="adminpanel"><h3 id="formHeading">새 사진 업로드</h3><div class="adminrows"><label>제목<input name="title" required maxlength="90" placeholder="예: 별빛 숲속의 토끼"></label><label>카테고리<select name="category"><option>동물</option><option>디저트</option><option>미니어처</option><option>판타지</option><option>자연</option><option>우주</option><option>힐링</option><option>계절</option><option>기타</option></select></label></div><label>설명<textarea name="description" rows="2" placeholder="작품 설명"></textarea></label><label>태그 (쉼표로 구분)<input name="tags" placeholder="토끼, 숲, 반짝임"></label><h3>📱 휴대폰용 (9:16)</h3><label>세로 이미지 JPG/PNG/WebP<input name="image" type="file" accept="image/jpeg,image/png,image/webp"></label><h3>🖥️ PC용 (16:9)</h3><label>가로 이미지 JPG/PNG/WebP<input name="pcImage" type="file" accept="image/jpeg,image/png,image/webp"></label><p class="smallnote">세로 또는 가로 사진 중 하나 이상 등록하세요. 4K 표시는 가로 3840×2160 이상 또는 세로 2160×3840 이상의 실제 해상도인 사진에만 붙습니다.</p><button class="btn" id="uploadButton" type="submit">사진 등록하기</button><button class="btn secondary" id="cancelEdit" type="button" hidden>수정 취소</button><div id="adminMsg" role="status"></div></form><div class="adminpanel"><h3>등록된 작품</h3><div id="adminList"></div></div></div></section>
-<section class="shell visitor-section" id="visitors" aria-label="방문 현황">
-  <div class="visitor-panel">
-    <div class="visitor-intro">
-      <div class="eyebrow">TINY WORLDS VISITORS</div>
-      <h2>작은 세상을 찾아온 방문자</h2>
-      <p id="visit-note">브라우저 기준 방문자 수 · 오늘은 한국시간 기준 · 집계는 설치 이후부터</p>
-    </div>
-    <div class="visitor-values" aria-live="polite">
-      <div class="visitor-number"><span>오늘 방문자</span><strong id="visit-today">—</strong></div>
-      <div class="visitor-number"><span>전체 방문자</span><strong id="visit-total">—</strong></div>
-    </div>
-  </div>
-</section>
+
 </main><footer id="about"><div class="shell foot"><div>✦ <strong>TinyWorlds</strong> · 상상 속 작은 세상의 무료 사진 갤러리<br><span>개인용 사진 배경화면 무료 제공</span></div><div>직접 만든 창작물만 공유합니다. 무단 재판매 및 재배포는 허용되지 않습니다.</div></div></footer>
 <div id="imageviewer" class="imageviewer" role="dialog" aria-modal="true" aria-label="큰 이미지 보기" aria-hidden="true">
   <div class="imageviewerbar"><span id="imageviewerTitle" class="imageviewertitle"></span>
